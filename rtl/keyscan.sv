@@ -52,15 +52,15 @@ module keyscan #(parameter M = 2)
   logic update;
   logic sclk, mclk;
 
-  clk_gen  #(sfreq) sc(clk, 0, 1, sclk);
-  sync     #(4)     sy(sclk, reset, rAsync, r);           // synchronize row bits
-  rcEval            rc(sclk, reset, r, cHigh, rcbits);    // row and column set and eval
-  update            up(sclk, reset, rcbits, update);      // determine whether or not to update
-  rcToHex           rh(rcbits, hex);                      // convert configuration to hex
-  shiftreg #(4, M)  sr(sclk, reset, update, hex, digits); // update display digits list
+  clk_gen  #(sfreq)  sc(clk, 0, 1, sclk);
+  sync     #(4)      sy(sclk, reset, rAsync, r);           // synchronize row bits
+  rcEval             rc(sclk, reset, r, cHigh, rcbits);    // row and column set and eval
+  update             up(sclk, reset, rcbits, update);      // determine whether or not to update
+  rcToHex            rh(rcbits, hex);                      // convert configuration to hex
+  spshiftreg #(4, M) sr(sclk, reset, update, hex, digits); // update display digits list
 
-  clk_gen  #(mfreq) mc(clk, 0, 1, mclk);                  // time mux clock gen
-  timeMux  #(4, M)  tm(mclk, reset, digits, c, anode);    // time multiplex display digits
-  seg               sg(hout, seg);                        // translate hex to display pins
+  clk_gen  #(mfreq)  mc(clk, 0, 1, mclk);                  // time mux clock gen
+  timeMux  #(4, M)   tm(mclk, reset, digits, c, anode);    // time multiplex display digits
+  seg                sg(hout, seg);                        // translate hex to display pins
 
 endmodule
