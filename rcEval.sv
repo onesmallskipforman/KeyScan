@@ -1,44 +1,39 @@
-module rcEval(input logic [3:0] r, 
-				  input logic clk,
-				  input logic reset,
-				  output logic [3:0] cHigh,
-				  output logic [7:0] rcbits);
-				  
-				  
-	typedef enum logic [1:0] {S0, S1, S2, S3} statetype;
-	statetype state, nextstate;
-	
-	always_ff @(posedge clk, posedge reset)
-		if (reset)	state <= S0;
-		else			state <= nextstate;
-		
-		
-	always_comb
-		case(state)
-			S0: 
-				begin
-					cHigh = 4'b1000;
-					nextstate = S1;
-					rcbits = {r, 4'b0010};
-				end
-			S1: 
-				begin
-					cHigh = 4'b0100;
-					nextstate = S2;
-					rcbits = {r, 4'b0001};
-				end
-			S2: 
-				begin
-					cHigh = 4'b0010;
-					nextstate = S3;
-					rcbits = {r, 4'b1000};
-				end
-			S3: 
-				begin
-					cHigh = 4'b0001;
-					nextstate = S0;
-					rcbits = {r, 4'b0100};
-				end
-		endcase
-			
-endmodule		
+
+/*
+  Robert "Skipper" Gonzalez
+  sgonzalez@g.hmc.edu
+  09/12/2018
+  row-column evaluation module
+
+  Below is a module for controlling and evaluating keypad signals. This module
+  has two primary functions: 1) setting different column pins of the
+  keypad high, and 2) concatenating the synchronous row bits r with the column signal
+  from back when the rows were read by the synchronizer. Since the synchronization
+  takes two clock cycles, use cHigh from two clock cycles prior.
+
+  Inputs:
+    clk:         clock signal
+    reset:       reset signal
+    r[3:0]:      synchronized row bits
+
+  Outputs:
+    c[3:0]:      keypad column bits to be set high
+    rcbits[7:0]: synchronized row bits concatenated with their corresponding column bits
+*/
+
+module rcEval(input  logic clk,
+              input  logic reset,
+              input  logic [3:0] r,
+              output logic [3:0] cHigh,
+              output logic [7:0] rcbits);
+
+  always_ff @(posedge clk)
+    if (reset) begin
+      cHigh  = 4'b1000;
+      rcbits = {r, 4'b0010};
+    end else begin
+      cHigh  = {cHigh[0], cHigh[3:1]};
+      rcbits = {r, rcbits[0], rcbits[3:1]};
+    end
+
+endmodule

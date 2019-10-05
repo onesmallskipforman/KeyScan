@@ -37,7 +37,7 @@ module timeMux #(parameter N=1,
 
   logic [$clog2(M)-1:0] i;
 
-  always_ff @(posedge clk, posedge reset)
+  always_ff @(posedge clk)
     if (reset)
       begin
         b <= 1;
