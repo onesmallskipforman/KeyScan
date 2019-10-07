@@ -44,23 +44,28 @@ module keyscan #(parameter M = 2)
                  output logic [6:0]   seg,
                  output logic [M-1:0] anode);
 
+  // faster frequencies for simulaiton
+  // parameter mfreq = 5 * (10**6);
+  // parameter sfreq = 5 * (10**6);
+
   parameter mfreq = 1100*M;
   parameter sfreq = 1000;
 
   logic [7:0] rcbits;
-  logic [3:0] hex, digits, hout, r;
+  logic [3:0] hex, hout, r;
+  logic [4*M-1:0] digits;
   logic update;
   logic sclk, mclk;
 
-  clk_gen  #(sfreq)  sc(clk, 0, 1, sclk);
-  sync     #(4)      sy(sclk, reset, rAsync, r);           // synchronize row bits
-  rcEval             rc(sclk, reset, r, cHigh, rcbits);    // row and column set and eval
-  update             up(sclk, reset, rcbits, update);      // determine whether or not to update
-  rcToHex            rh(rcbits, hex);                      // convert configuration to hex
-  spshiftreg #(4, M) sr(sclk, reset, update, hex, digits); // update display digits list
+  clk_gen    #(sfreq) sc(clk, 1'b0, 1'b1, sclk);
+  sync       #(4)     sy(sclk, reset, rAsync, r);           // synchronize row bits
+  rcEval              rc(sclk, reset, r, cHigh, rcbits);    // row and column set and eval
+  update              up(sclk, reset, rcbits, update);      // determine whether or not to update
+  rcToHex             rh(rcbits, hex);                      // convert configuration to hex
+  spshiftreg #(4, M)  sr(sclk, reset, update, hex, digits); // update display digits list
 
-  clk_gen  #(mfreq)  mc(clk, 0, 1, mclk);                  // time mux clock gen
-  timeMux  #(4, M)   tm(mclk, reset, digits, c, anode);    // time multiplex display digits
-  seg                sg(hout, seg);                        // translate hex to display pins
+  clk_gen    #(mfreq) mc(clk, 1'b0, 1'b1, mclk);            // time mux clock gen
+  timeMux    #(4, M)  tm(mclk, reset, digits, hout, anode); // time multiplex display digits
+  seg                 sg(hout, seg);                        // translate hex to display pins
 
 endmodule

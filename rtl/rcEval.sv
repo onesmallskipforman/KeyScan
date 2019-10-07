@@ -29,11 +29,11 @@ module rcEval(input  logic clk,
 
   always_ff @(posedge clk)
     if (reset) begin
-      cHigh  = 4'b1000;
-      rcbits = {r, 4'b0010};
+      cHigh  <= 4'b1000;
+      rcbits <= {4'b0000, 4'b0100};
     end else begin
-      cHigh  = {cHigh[0], cHigh[3:1]};
-      rcbits = {r, rcbits[0], rcbits[3:1]};
+      cHigh  <= {cHigh[0], cHigh[3:1]};
+      rcbits <= {r, rcbits[0], rcbits[3:1]};
     end
 
 endmodule

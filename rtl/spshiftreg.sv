@@ -34,7 +34,6 @@ module spshiftreg #(parameter N = 4,
                     input  logic [N-1:0]   sin,
                     output logic [N*M-1:0] q);
 
-
   always_ff @(posedge clk)
     if      (reset) q <= 0;
     else if (en)    q <= {q[(M-1)*N-1:0], sin};

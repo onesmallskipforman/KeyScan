@@ -26,12 +26,13 @@
 
 module testbench();
 
+  parameter M = 2;
+  parameter delay = 200;
+  
   logic clk, reset;
   logic [3:0] r, rdes, c, cdes;
   logic [6:0] seg;
-  logic [1:0] anode;
-  parameter M = 2;
-  parameter delay = 200;
+  logic [M-1:0] anode;
 
   // instantiate device under test
   keyscan #(M) dut(clk, reset, r, c, seg, anode);
@@ -42,14 +43,14 @@ module testbench();
 
   // reset, then cycle through all possible keypad inputs
   initial begin
-    reset = 1; #10; reset = 0;
+    reset = 1; #100; reset = 0;
 
-    for (i = 0; i < 4; i++) begin
+    for (int i = 0; i < 4; i++) begin
       rdes    = 4'b0000;
       rdes[i] = 1;
-      for (j = 0; j < 4; j++) begin
+      for (int j = 0; j < 4; j++) begin
         cdes    = 4'b0000; #delay;
-        cdes[i] = 1;       #delay;
+        cdes[j] = 1;       #delay;
       end
     end
 

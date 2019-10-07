@@ -30,11 +30,15 @@ module counter#(parameter N=8,
                 input  logic [M-1:0] inc,
                 output logic [N-1:0] q);
 
+  // initilizarion for simulation
+  initial begin
+    q = 0;
+  end
+
   // ensure counter only makes changes as the tick of
   // the clock or press of reset
+  // restart q if reset, otherwise increment
   always_ff @(posedge clk)
-
-    // restart q if reset, otherwise increment
     if      (reset)    q <= 0;
     else if (en)       q <= q+inc;
     else               q <= q;

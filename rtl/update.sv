@@ -23,7 +23,7 @@
 
 module update(input  logic       clk,
               input  logic       reset,
-              input  logic [7:0] rcBits.
+              input  logic [7:0] rcBits,
               output logic       update);
 
   logic [3:0] cols, nextcols;
@@ -50,6 +50,6 @@ module update(input  logic       clk,
     endcase
 
   assign update   = ((state == S0) & (nextstate == S1));
-  assign nextcols = (update)? rcbits[3:0] : cols;
+  assign nextcols = (update)? rcBits[3:0] : cols;
 
 endmodule

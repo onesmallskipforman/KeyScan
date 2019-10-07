@@ -33,7 +33,7 @@ module sync #(parameter N=8)
 
   logic [N-1:0] n1;
 
-  always_ff @(posedge clk, posedge reset)
+  always_ff @(posedge clk)
     if (reset)
       begin
         n1 <= 0;
